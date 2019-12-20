@@ -1,0 +1,23 @@
+ul li {
+    float: left;
+    list-style-type:none;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.NavigationItems {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    flex-flow: column;
+}
+
+@media(min-width: 500px) {
+    .NavigationItems {
+        flex-flow: row;
+    }
+}
+
