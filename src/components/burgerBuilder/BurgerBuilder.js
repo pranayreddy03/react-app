@@ -1,9 +1,11 @@
 import React, {Component, Fragment} from 'react';
+import axiosInstance from '../../axios-orders';
 
 import Burger from '../Burger/Burger/Burger';
 import BuildControls from '../Burger/BuildControls/BuildControls';
 import OrderSummary from '../OrderSummary/OrderSummary'; 
 import Modal from '../shared/modal/Modal';
+import Spinner from '../shared/spinner/Spinner';
 
 class BurgerBuilder extends Component {
 
@@ -23,17 +25,24 @@ class BurgerBuilder extends Component {
         },
         totalPrice: 4,
         purchasable: false,
-        purchasing: false
+        purchasing: false,
+        loading: false
     }
 
     render() {
+
+        let orderSumamry = <OrderSummary ingredients={this.state.ingredients} 
+        clickedBkdrp={this.backdropHandler}
+        totalPrice ={this.state.totalPrice}  
+        purchaseContinue ={this.purchaseContinueHandler} />
+        if(this.state.loading) {
+            orderSumamry = <Spinner/>
+        }
+
         return (
             <Fragment>
                 <Modal show={this.state.purchasing} clickedBkdrp={this.backdropHandler}>
-                    <OrderSummary ingredients={this.state.ingredients} 
-                                  clickedBkdrp={this.backdropHandler}
-                                  totalPrice ={this.state.totalPrice}  
-                                  purchaseContinue ={this.purchaseContinueHandler} />
+                    {orderSumamry}
                 </Modal>
                 <Burger ingredients={this.state.ingredients} />
                 <BuildControls add={this.addIngredient}
@@ -106,7 +115,36 @@ class BurgerBuilder extends Component {
     }
 
     purchaseContinueHandler = () => {
-        alert('continue');
+        this.setState({
+            loading: true
+        })
+        const order = {
+            ingredients: this.state.ingredients,
+            price: this.state.totalPrice,
+            customer: {
+                name: 'Pranay',
+                address: {
+                    street: '1 Main street',
+                    city: 'NYC',
+                    state: 'NY',
+                    zipCode: 99999
+                },
+            email: 'test@test.com'  
+            }
+        }
+        axiosInstance.post('/orders.json', order)
+        .then(response => {
+            this.setState({
+                loading: false,
+                purchasing: false
+            })
+        })
+        .catch(error => {
+            this.setState({
+                loading: false,
+                purchasing: false
+            })
+        });
     }
 
 }
